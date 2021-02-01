@@ -10,4 +10,4 @@ Of course, a 24/7 available machine is not a very cost-effective and
 environment-friendly solution in a home setup, so the **Wake-On-Lan** feature 
 was the right choice.
 
-(..._to be continued_)
+(_to be continued_)
