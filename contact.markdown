@@ -2,5 +2,10 @@
 title: Contact
 ---
 
-I live in a small hut in the mountains of Kumano Kodō on Kii Hantō and would not
-like to be contacted.
+You can contact me at:
+
+* [LinkedIn](https://www.linkedin.com/in/stefanos-papadogiannis-903383153/)
+
+You can check my public repos at:
+
+* [Github](https://github.com/steve-papadogiannis)
