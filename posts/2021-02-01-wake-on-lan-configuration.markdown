@@ -13,10 +13,12 @@ environment-friendly solution in a home setup, so the **Wake-On-Lan** feature
 was the right choice. This feature enables you to turn on your machine using 
 the local network. (_[Wake-on-Lan](https://en.wikipedia.org/wiki/Wake-on-LAN)_)
 
-The desktop at hand runs **Ubuntu 20.04.1 LTS (GNU/Linux 5.8.0-40-generic x86_64)** as OS
+The desktop at hand runs **Ubuntu 20.04.1 LTS** (**GNU/Linux 5.8.0-40-generic x86_64**) as OS
 (not a server oriented one) and has an **ASUS P5Q-SE** parentboard with an integrated network 
 interface controller (**NIC**). The network interface controller must support 
 the **Wake-On-Lan** feature in order to enable it.
+
+---
 
 ## Install ssh server
 
@@ -34,6 +36,8 @@ If the `ssh` server is not in place, one can download it by issuing the below co
 After `ssh` server was in place and active, I performed an `ssh` connection as a health check 
 (in order to avoid plugging/unplugging input/output devices for debugging).
 
+---
+
 ## Enable WOL in BIOS
 
 A good guide for the steps can be found at:
@@ -44,6 +48,8 @@ In the aforementioned parentboard I had to enter the **BIOS**, go under **Power*
 next to **APM Configuration** menu and enable both **Power by PCI Devices** and 
 **Power by PCIE Devices**. For reasons unknown to me, both flags should be enabled in order to
 work.
+
+---
 
 ## Enable WOL in software
 
@@ -78,6 +84,8 @@ when I issued the `sudo ethtool enp2s0` command again.
 
 Then, I shut down the machine.
 
+---
+
 ## Wake-On-Lan Client program
 
 In order to perform the **Wake-On-Lan**s to this machine I got a portable **Wake-On-Land** program
@@ -89,6 +97,8 @@ downloaded at:
 [Nirsoft WakeMeOnLan](https://www.nirsoft.net/utils/wake_on_lan.html)
 
 It is a simple program to hold and awake your **Wake-On-Lan** machines.
+
+---
 
 ## Persisting setting
 
@@ -125,6 +135,8 @@ WantedBy=multi-user.target
 What this script does is to enable the **Wake-On-Lan** feature in every boot
 after the network initializes. This is done by `systemd` automatically, so you end
 up with a **persistent** setting of the feature.
+
+---
 
 ## Conclusion
 
