@@ -33,8 +33,17 @@ If the `ssh` server is not in place, one can download it by issuing the below co
 
 `sudo apt update && sudo apt install openssh-server`
 
+---
+
+## Use ssh client
+
 After `ssh` server was in place and active, I performed an `ssh` connection as a health check 
 (in order to avoid plugging/unplugging input/output devices for debugging).
+
+To perform the health check I used the [MobaXterm](https://mobaxterm.mobatek.net/).
+
+`MobaXTerm` is a user-friendly toolbox for remote computing, which includes 
+a colorful `ssh client`
 
 ---
 
@@ -145,6 +154,7 @@ system. Many parts may vary when enabling the feature to another machine, but th
 concept remains as described and summarized to the next list:
 
 * Install **ssh-server**
+* Use an **ssh client**
 * Enable **WOL** in **BIOS**
 * Enable **WOL** in software
 * **Wake-On-Lan Client** program
