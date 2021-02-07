@@ -38,7 +38,11 @@
 <p><code>sudo service ssh status</code></p>
 <p>If the <code>ssh</code> server is not in place, one can download it by issuing the below command:</p>
 <p><code>sudo apt update &amp;&amp; sudo apt install openssh-server</code></p>
+<hr />
+<h2 id="use-ssh-client">Use ssh client</h2>
 <p>After <code>ssh</code> server was in place and active, I performed an <code>ssh</code> connection as a health check (in order to avoid plugging/unplugging input/output devices for debugging).</p>
+<p>To perform the health check I used the <a href="https://mobaxterm.mobatek.net/">MobaXterm</a>.</p>
+<p><code>MobaXTerm</code> is a user-friendly toolbox for remote computing, which includes a colorful <code>ssh client</code></p>
 <hr />
 <h2 id="enable-wol-in-bios">Enable WOL in BIOS</h2>
 <p>A good guide for the steps can be found at: <a href="https://help.ubuntu.com/community/WakeOnLan#:~:text=To%20enable%20WoL%20in%20the,Save%20your%20settings%20and%20reboot.">WakeOnLan Ubuntu Help</a></p>
@@ -89,6 +93,7 @@ WantedBy=multi-user.target</code></pre>
 <p>Lines above, documented a walkthrough for enabling <strong>Wake-On-Lan</strong> feature for the specific system. Many parts may vary when enabling the feature to another machine, but the concept remains as described and summarized to the next list:</p>
 <ul>
 <li>Install <strong>ssh-server</strong></li>
+<li>Use an <strong>ssh client</strong></li>
 <li>Enable <strong>WOL</strong> in <strong>BIOS</strong></li>
 <li>Enable <strong>WOL</strong> in software</li>
 <li><strong>Wake-On-Lan Client</strong> program</li>
