@@ -5,7 +5,7 @@ title: Passing Application Secrets as Maven Compile Parameters
 ## Intro
 
 When you have a project that is stored on a public repo, you have to have a process to not accidentally commit and push
-your applications secrets (`private keys`, `API keys`, etc)
+the secrets of your application (`private keys`, `API keys`, etc)
 and have them visible to the public eye, unless you want to be exploited for good.
 
 ## Setup
