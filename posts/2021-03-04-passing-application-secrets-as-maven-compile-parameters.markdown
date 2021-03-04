@@ -105,4 +105,106 @@ respectively.
 
 Well, now, what may these files contain? 
 
-The 
+The concept of these files are to have key value pairs such as:
+```properties
+api.key=value
+```
+
+For the project at hand, in `application.properties` we have:
+
+```properties
+api.key=${api.key}
+```
+
+What that means is that the `api.key` would take the value of another property (also named `api.key`)
+when resolved (thus put in `${...}`). The same also holds for the `application-test.properties`.
+
+## Pom project properties
+
+Well, so we have keys that take the values of other keys when resolved, but where these other keys are 
+defined?
+
+The answer comes from the below lines of the `pom.xml`:
+
+````xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    ...    
+    
+    <properties>
+        ...
+        <api.key>${api.key}</api.key>
+        <test.api.key>${test.api.key}</test.api.key>
+    </properties>
+
+    ...
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+    
+        ...
+    
+    </build>
+    
+</project>
+````
+
+In the file, we define that we have two properties named `api.key` and `test.api.key` that are
+the ones that we resolve in the `.properties` files. The resolving is enabled by the 
+configuration inside the `<build>` element of the `pom`, which states that the files inside the
+two `resources` directories should have their included `${...}` expressions resolved.
+
+Thus far we are good, but what are the values of the properties in the `pom`?
+
+Well, they are `${api.key}` and `${test.api.key}`...
+
+If this is not like [Inception](https://www.imdb.com/title/tt1375666/), then what is?
+
+Ok, so once more we have two properties that take the values of two other properties when resolved.
+
+These final properties are the ones injected as `Java` system properties when we invoke the 
+`Maven` `compile` `lifecycle` `step`:
+
+```
+mvn compile -Dapi.key=<api.key.value> -Dtest.api.key=<test.api.key.value>
+```
+
+The `<api.key.value>` and `<test.api.key.value>` should be replaced with the real one in this step.
+
+## Conclusion
+
+In conclusion, we have the below sequence of steps in order to inject our secret info to our application
+without introducing it in the source code.
+
+```
+Maven command Java system properties
+                 ^
+                 | resolves from
+           Pom xml file
+                 ^
+                 | resolves from 
+    Application properties file
+                 ^
+                 | resolves from
+         Application code 
+```
+
+
+
+```puml
+A -> B
+```
