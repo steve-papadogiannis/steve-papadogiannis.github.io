@@ -5,7 +5,7 @@ title: Passing Application Secrets as Maven Compile Parameters
 ## Intro
 
 When you have a project that is stored on a public repo, you have to have a process to not accidentally commit and push
-your application's secrets (`private keys`, `API keys`, etc.)
+your applications secrets (`private keys`, `API keys`, etc)
 and have them visible to the public eye, unless you want to be exploited for good.
 
 ## Setup
@@ -170,7 +170,7 @@ two `resources` directories should have their included `${...}` expressions reso
 
 Thus far we are good, but what are the values of the properties in the `pom`?
 
-Well, they are `${api.key}` and `${test.api.key}`...
+Well, they are `${api.key}` and `${test.api.key}`..
 
 If this is not like [Inception](https://www.imdb.com/title/tt1375666/), then what is?
 
@@ -203,8 +203,3 @@ Maven command Java system properties
          Application code 
 ```
 
-
-
-```puml
-A -> B
-```
