@@ -1,0 +1,15 @@
+@startuml
+start
+if (Is local application file present?) then (yes)
+  :Local application file property;
+else (no)
+  :Gradle environment variable;
+endif
+-> resolves;
+:Artifact specific resource values;
+-> resolves;
+:AndroidManifest.xml property;
+-> used by;
+:Application code;
+stop
+@enduml

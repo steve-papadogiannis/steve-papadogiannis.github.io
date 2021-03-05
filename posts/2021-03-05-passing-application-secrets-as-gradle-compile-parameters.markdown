@@ -182,7 +182,7 @@ android {
 
 A method is defined named **getApiKey** which takes three **arguments**
 the **fileName** to look for, the **apiKeyProperty** to lookup in the **fileName**
-`.proeperties` file and the **apiKeyEnvVar** to lookup in the 
+`.properties` file, and the **apiKeyEnvVar** to lookup in the 
 system environment variables when the **fileName** specified does not exist.
 
 The resolution is pretty straightforward. If the file **fileName** exists,
@@ -199,14 +199,56 @@ respectively.
 
 So, for example, for the **debug_api_key**, the method tries to extract the 
 value of the property **api.key** from a file with filename **debug-api-key.properties**
-and if it fails to find the file tries to extract the value of 
+and if it fails to find the file, it tries to extract the value of 
 the **Environment Variable** named **DEBUG_API_KEY**.
 
 ## Local Application `.properties` Files
 
+If we chose to use the local application `.properties` files then we should 
+have two such files, named **debug-api-key.properties** and **release-api-key.properties**
+in the root directory of our project.
+
+The main property of these files is the below one:
+```properties
+api.key=<api.key.value>
+```
+
+Keep in mind that these file have to be pattern or exactly matched with at least
+one rule in the `.gitignore` file of the project.
+
+For example:
+
+```gitignore
+debug-api-key.properties
+release-api-key.properties
+```
 
 ## Gradle Environment Variables
 
+If we chose to use the **Gradle** environment variables then we can set the 
+**DEBUG_API_KEY** environment variable like below:
+
+```shell
+DEBUG_API_KEY=<api.key.value>
+export DEBUG_API_KEY
+```
+
+With that give, when the build command is issued:
+
+```shell
+./gradlew build connectedCheck
+```
+
+then the property\'s value will be
+resolved to the environment variable\'s value
+
 ## Conclusion
 
+In conclusion, as in the previous post, we have defined a sequence of steps 
+that inject our secret info to our application
+without introducing it in the source code.
 
+![Fig. 1: Property Resolution](../images/property_resolution_gradle.svg)
+
+This process assures us that our secret info of an application is safe,
+and it would not be made public, when working in public repos.

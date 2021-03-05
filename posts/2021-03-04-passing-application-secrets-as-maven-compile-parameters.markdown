@@ -192,7 +192,7 @@ The `<api.key.value>` and `<test.api.key.value>` should be replaced with the rea
 In conclusion, we have the below sequence of steps in order to inject our secret info to our application
 without introducing it in the source code.
 
-![Fig. 1: Property Resolution](../images/property_resolution.svg)
+![Fig. 1: Property Resolution](../images/property_resolution_maven.svg)
 
 This process assures us that our secret info of an application is safe,
 and it would not be made public, when working in public repos.
