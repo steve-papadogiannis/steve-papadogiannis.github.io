@@ -1,0 +1,11 @@
+@startuml
+start
+:Maven command Java system properties;
+-> resolves;
+:Pom xml file properties;
+-> resolves;
+:Application **.properties** files properties;
+-> used by;
+:Application code;
+stop
+@enduml
