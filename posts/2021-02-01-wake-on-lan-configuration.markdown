@@ -27,11 +27,19 @@ after the configuration.
 
 To check if the `ssh` server is installed and/or active I issued the below command:
 
-`sudo service ssh status`
+<script src="https://gist.github.com/steve-papadogiannis/e6a8ebe71cdaafddc91778a27431cb35.js"></script>
+
+[comment]: <> (```)
+[comment]: <> (sudo service ssh status)
+[comment]: <> (```)
 
 If the `ssh` server is not in place, one can download it by issuing the below command:
 
-`sudo apt update && sudo apt install openssh-server`
+<script src="https://gist.github.com/steve-papadogiannis/b398aa649240929cefeb2d26103cec9d.js"></script>
+
+[comment]: <> (```)
+[comment]: <> (sudo apt update && sudo apt install openssh-server)
+[comment]: <> (```)
 
 ---
 
@@ -68,13 +76,13 @@ Issuing `ifconfig` gave me the info I needed. In my case the **NIC** was called 
 
 Next command in line was `sudo ethtool enp2s0` which revealed its secrets:
 
-```
-Supports Wake-on: pg
+<script src="https://gist.github.com/steve-papadogiannis/c33f3cd8500e4fd192a741f2d7424124.js"></script>
 
-...
-
-Wake-on: d
-```
+[comment]: <> (```)
+[comment]: <> (Supports Wake-on: pg)
+[comment]: <> (...)
+[comment]: <> (Wake-on: d)
+[comment]: <> (```)
 
 The `g` in `Supports Wake-on` meant that I was lucky and my machine actually supported the **WOL** feature
 and the `d` in `Wake-on` meant that the feature was disabled at the time.
@@ -85,9 +93,11 @@ I issued an `sudo ethtool -s enp2s0 wol g` to enable the feature.
 
 After that I got a reassuring:
 
-```
-Wake-on: g
-```
+<script src="https://gist.github.com/steve-papadogiannis/d37bfd5855b7477c2cf6472f381f7dcd.js"></script>
+
+[comment]: <> (```)
+[comment]: <> (Wake-on: g)
+[comment]: <> (```)
 
 when I issued the `sudo ethtool enp2s0` command again.
 
@@ -127,19 +137,19 @@ What I read and did was to
 make a new file at `/etc/systemd/system/wol@.service`
 and append the below content:
 
-```
-[Unit]
-Description=Wake-on-LAN for %i
-Requires=network.target
-After=network.target
+<script src="https://gist.github.com/steve-papadogiannis/6f16e1ff83395ec5b23f5afce5da0e18.js"></script>
 
-[Service]
-ExecStart=/usr/bin/ethtool -s %i wol g
-Type=oneshot
-
-[Install]
-WantedBy=multi-user.target
-```
+[comment]: <> (```)
+[comment]: <> ([Unit])
+[comment]: <> (Description=Wake-on-LAN for %i)
+[comment]: <> (Requires=network.target)
+[comment]: <> (After=network.target)
+[comment]: <> ([Service])
+[comment]: <> (ExecStart=/usr/bin/ethtool -s %i wol g)
+[comment]: <> (Type=oneshot)
+[comment]: <> ([Install])
+[comment]: <> (WantedBy=multi-user.target)
+[comment]: <> (```)
 
 What this script does is to enable the **Wake-On-Lan** feature in every boot
 after the network initializes. This is done by `systemd` automatically, so you end
