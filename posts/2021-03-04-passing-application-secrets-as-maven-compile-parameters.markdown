@@ -37,23 +37,23 @@ In order to perform the call we authenticate/authorize our code via the **API Ke
 
 The code to fetch the **API Key** could be something like the below:
 
-```java
-    private static final String APPLICATION_PROPERTIES_FILE_NAME = "application.properties";
-    private static final String API_KEY_PROPERTY_KEY = "api.key";
-    
-    ...
-    
-    private String getApiKey() {
-        try {
-            final Properties props = new Properties();
-            props.load(Server.class.getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES_FILE_NAME));
-            return props.getProperty(API_KEY_PROPERTY_KEY);
-        } catch (IOException ioException) {
-            LOGGER.severe(ioException.toString());
-            return "";
-        }
-    }
-```
+<script src="https://gist.github.com/steve-papadogiannis/8efb49b6febdfff6daa99a66d5aa4839.js"></script>
+
+[comment]: <> (```java)
+[comment]: <> (private static final String APPLICATION_PROPERTIES_FILE_NAME = "application.properties";)
+[comment]: <> (private static final String API_KEY_PROPERTY_KEY = "api.key";)
+[comment]: <> (        ...)
+[comment]: <> (private String getApiKey&#40;&#41; {)
+[comment]: <> (        try {)
+[comment]: <> (final Properties props = new Properties&#40;&#41;;)
+[comment]: <> (        props.load&#40;Server.class.getClassLoader&#40;&#41;.getResourceAsStream&#40;APPLICATION_PROPERTIES_FILE_NAME&#41;&#41;;)
+[comment]: <> (        return props.getProperty&#40;API_KEY_PROPERTY_KEY&#41;;)
+[comment]: <> (        } catch &#40;IOException ioException&#41; {)
+[comment]: <> (        LOGGER.severe&#40;ioException.toString&#40;&#41;&#41;;)
+[comment]: <> (        return "";)
+[comment]: <> (        })
+[comment]: <> (        })
+[comment]: <> (```)
 
 In the above code snippet we load the content of a `.properties` file
 to a `Properties` object in order to retrieve the value of a specific
@@ -61,23 +61,23 @@ property named `api.key`
 
 A same snippet would fetch our `test.api.key` for our test suites:
 
-```java
-    private static final String APPLICATION_PROPERTIES_FILE_NAME = "application-test.properties";
-    private static final String API_KEY_PROPERTY_KEY = "test.api.key";
-    
-    ...
+<script src="https://gist.github.com/steve-papadogiannis/da6572e406ca808a8f77e6fa0dd2b76e.js"></script>
 
-    private String getApiKey() {
-        try {
-            final Properties props = new Properties();
-            props.load(ServerTest.class.getClassLoader().getResourceAsStream(APPLICATION_PROPERTIES_FILE_NAME));
-            return props.getProperty(API_KEY_PROPERTY_KEY);
-        } catch (IOException ioException) {
-            LOGGER.severe(ioException.toString());
-            return "";
-        }
-    }
-```
+[comment]: <> (```java)
+[comment]: <> (    private static final String APPLICATION_PROPERTIES_FILE_NAME = "application-test.properties";)
+[comment]: <> (    private static final String API_KEY_PROPERTY_KEY = "test.api.key";)
+[comment]: <> (    ...)
+[comment]: <> (    private String getApiKey&#40;&#41; {)
+[comment]: <> (        try {)
+[comment]: <> (            final Properties props = new Properties&#40;&#41;;)
+[comment]: <> (            props.load&#40;ServerTest.class.getClassLoader&#40;&#41;.getResourceAsStream&#40;APPLICATION_PROPERTIES_FILE_NAME&#41;&#41;;)
+[comment]: <> (            return props.getProperty&#40;API_KEY_PROPERTY_KEY&#41;;)
+[comment]: <> (        } catch &#40;IOException ioException&#41; {)
+[comment]: <> (            LOGGER.severe&#40;ioException.toString&#40;&#41;&#41;;)
+[comment]: <> (            return "";)
+[comment]: <> (        })
+[comment]: <> (    })
+[comment]: <> (```)
 
 ## Properties files
 
@@ -89,34 +89,43 @@ to hold the separate keys of runtime and testing, respectively.
 
 These files are best placed at:
 
-```
-src
-|_ main
-   |_ resources
-```
+<script src="https://gist.github.com/steve-papadogiannis/b69d2848bda7e37dc683766a9a11a8cd.js"></script>
+
+[comment]: <> (```)
+[comment]: <> (src)
+[comment]: <> (|_ main)
+[comment]: <> (   |_ resources)
+[comment]: <> (```)
 
 and
 
-```
-src
-|_ test
-   |_ resources
-```
+<script src="https://gist.github.com/steve-papadogiannis/3f7b4824184612e08beb856f84ae4e53.js"></script>
+
+[comment]: <> (```)
+[comment]: <> (src)
+[comment]: <> (|_ test)
+[comment]: <> (   |_ resources)
+[comment]: <> (```)
 
 respectively.
 
 Well, now, what may these files contain? 
 
 The concept of these files are to have key value pairs such as:
-```properties
-api.key=value
-```
+
+<script src="https://gist.github.com/steve-papadogiannis/b285b6ddd979bfa48f2bb8623c6257ec.js"></script>
+
+[comment]: <> (```properties)
+[comment]: <> (api.key=value)
+[comment]: <> (```)
 
 For the project at hand, in `application.properties` we have:
 
-```properties
-api.key=${api.key}
-```
+<script src="https://gist.github.com/steve-papadogiannis/944bd3afbc8ad3c40470f24ec1af0f15.js"></script>
+
+[comment]: <> (```properties)
+[comment]: <> (api.key=${api.key})
+[comment]: <> (```)
 
 What that means is that the `api.key` would take the value of another property (also named `api.key`)
 when resolved (thus put in `${...}`). The same also holds for the `application-test.properties`.
@@ -128,42 +137,37 @@ defined?
 
 The answer comes from the below lines of the `pom.xml`:
 
-````xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
-    ...    
-    
-    <properties>
-        ...
-        <api.key>${api.key}</api.key>
-        <test.api.key>${test.api.key}</test.api.key>
-    </properties>
+<script src="https://gist.github.com/steve-papadogiannis/5a8c81583b71883e577ba223dd9f15e0.js"></script>
 
-    ...
-
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-            </testResource>
-        </testResources>
-    
-        ...
-    
-    </build>
-    
-</project>
-````
+[comment]: <> (````xml)
+[comment]: <> (<?xml version="1.0" encoding="UTF-8"?>)
+[comment]: <> (<project xmlns="http://maven.apache.org/POM/4.0.0")
+[comment]: <> (         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance")
+[comment]: <> (         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">)
+[comment]: <> (    ...    )
+[comment]: <> (    <properties>)
+[comment]: <> (        ...)
+[comment]: <> (        <api.key>${api.key}</api.key>)
+[comment]: <> (        <test.api.key>${test.api.key}</test.api.key>)
+[comment]: <> (    </properties>)
+[comment]: <> (    ...)
+[comment]: <> (    <build>)
+[comment]: <> (        <resources>)
+[comment]: <> (            <resource>)
+[comment]: <> (                <directory>src/main/resources</directory>)
+[comment]: <> (                <filtering>true</filtering>)
+[comment]: <> (            </resource>)
+[comment]: <> (        </resources>)
+[comment]: <> (        <testResources>)
+[comment]: <> (            <testResource>)
+[comment]: <> (                <directory>src/test/resources</directory>)
+[comment]: <> (                <filtering>true</filtering>)
+[comment]: <> (            </testResource>)
+[comment]: <> (        </testResources>)
+[comment]: <> (        ...)
+[comment]: <> (    </build>)
+[comment]: <> (</project>)
+[comment]: <> (````)
 
 In the file, we define that we have two properties named `api.key` and `test.api.key` that are
 the ones that we resolve in the `.properties` files. The resolving is enabled by the 
@@ -181,9 +185,11 @@ Ok, so once more we have two properties that take the values of two other proper
 These final properties are the ones injected as `Java` system properties when we invoke the 
 **Maven compile lifecycle step**:
 
-```
-mvn compile -Dapi.key=<api.key.value> -Dtest.api.key=<test.api.key.value>
-```
+<script src="https://gist.github.com/steve-papadogiannis/6cf9c87d833bc4b9df12828bd56e521b.js"></script>
+
+[comment]: <> (```)
+[comment]: <> (mvn compile -Dapi.key=<api.key.value> -Dtest.api.key=<test.api.key.value>)
+[comment]: <> (```)
 
 The `<api.key.value>` and `<test.api.key.value>` should be replaced with the real one in this step.
 
