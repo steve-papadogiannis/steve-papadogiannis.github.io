@@ -51,32 +51,28 @@ The configuration of the **API Key** that will be used
 by the maps library, is done **declaratively** inside the applcation\'s 
 `AndroidManifest.xml` file like below:
 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        package="gr.papadogiannis.stefanos.DistSysClientAndroid">
+<script src="https://gist.github.com/steve-papadogiannis/e19913f13517833800d4441a36662ce3.js"></script>
 
-    ...
-
-    <application
-            android:allowBackup="false"
-            android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name"
-            android:roundIcon="@mipmap/ic_launcher_round"
-            android:supportsRtl="true"
-            android:theme="@style/AppTheme">
-
-        <meta-data
-                android:name="com.google.android.geo.API_KEY"
-                android:value="@string/google_maps_key"/>
-
-        ...
-
-    </application>
-
-</manifest>
-```
+[comment]: <> (```xml)
+[comment]: <> (<?xml version="1.0" encoding="utf-8"?>)
+[comment]: <> (<manifest)
+[comment]: <> (        xmlns:android="http://schemas.android.com/apk/res/android")
+[comment]: <> (        package="gr.papadogiannis.stefanos.DistSysClientAndroid">)
+[comment]: <> (    ...)
+[comment]: <> (    <application)
+[comment]: <> (    android:allowBackup="false")
+[comment]: <> (    android:icon="@mipmap/ic_launcher")
+[comment]: <> (    android:label="@string/app_name")
+[comment]: <> (    android:roundIcon="@mipmap/ic_launcher_round")
+[comment]: <> (    android:supportsRtl="true")
+[comment]: <> (    android:theme="@style/AppTheme">)
+[comment]: <> (        <meta-data)
+[comment]: <> (        android:name="com.google.android.geo.API_KEY")
+[comment]: <> (        android:value="@string/google_maps_key"/>)
+[comment]: <> (        ...)
+[comment]: <> (    </application>)
+[comment]: <> (</manifest>)
+[comment]: <> (```)
 
 As we see the `com.google.android.geo.API_KEY` takes an **android:value** of type 
 **string** that should be present in the **resources** of the application
@@ -89,41 +85,49 @@ Now for the interesting part..
 based on the artifact you are producing, meaning that you can have the aforementioned
 value resolved either from:
 
-```
-app
-|_ src
-   |_ debug
-      |_ res
-         |_ values
-            |_ google_maps_api.xml
-```
+<script src="https://gist.github.com/steve-papadogiannis/c221b3a0f33bebb24d6e09573009026e.js"></script>
+
+[comment]: <> (```)
+[comment]: <> (app)
+[comment]: <> (|_ src)
+[comment]: <> (   |_ debug)
+[comment]: <> (      |_ res)
+[comment]: <> (         |_ values)
+[comment]: <> (            |_ google_maps_api.xml)
+[comment]: <> (```)
 
 or from:
 
-```
-app
-|_ src
-   |_ release
-      |_ res
-         |_ values
-            |_ google_maps_api.xml
-```
+<script src="https://gist.github.com/steve-papadogiannis/998ae1f301443ce4cd79dae5057bd6a5.js"></script>
+
+[comment]: <> (```)
+[comment]: <> (app)
+[comment]: <> (|_ src)
+[comment]: <> (   |_ release)
+[comment]: <> (      |_ res)
+[comment]: <> (         |_ values)
+[comment]: <> (            |_ google_maps_api.xml)
+[comment]: <> (```)
 
 The contents of the files are:
 
-```xml
-<resources>
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">@string/debug_api_key</string>
-</resources>
-```
+<script src="https://gist.github.com/steve-papadogiannis/c31429a7b0003b459d4db0e2e7adf0bf.js"></script>
+
+[comment]: <> (```xml)
+[comment]: <> (<resources>)
+[comment]: <> (    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">@string/debug_api_key</string>)
+[comment]: <> (</resources>)
+[comment]: <> (```)
 
 and:
 
-```xml
-<resources>
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">@string/release_api_key</string>
-</resources>
-```
+<script src="https://gist.github.com/steve-papadogiannis/40a5ad1c31a49ae5520a868c55728332.js"></script>
+
+[comment]: <> (```xml)
+[comment]: <> (<resources>)
+[comment]: <> (    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">@string/release_api_key</string>)
+[comment]: <> (</resources>)
+[comment]: <> (```)
 
 respectively. So the **@string/google_maps_key** would take the value of 
 either the **@string/debug_api_key**, or the **@string/release_api_key**,
@@ -143,42 +147,32 @@ but enable you to define **Environment variables**).
 The code snippet below, extracted from `app/build.gradle` 
 gives a glimpse of the solution at hand:
 
-```groovy
+<script src="https://gist.github.com/steve-papadogiannis/50291c95e30d0dd1a0d8ab1801e62352.js"></script>
 
-...
-
-def getApiKey(String fileName, String apiKeyProperty, String apiKeyEnvVar) {
-    Properties apiKeyProperties = new Properties()
-    def file = project.rootProject.file(fileName)
-    if (file.exists()) {
-        apiKeyProperties.load(file.newDataInputStream())
-        return apiKeyProperties.getProperty(apiKeyProperty) ?: "Please define $apiKeyProperty in $fileName"
-    } else {
-        return System.getenv(apiKeyEnvVar) ?: "Please define $apiKeyEnvVar environment variable"
-    }
-}
-
-android {
-
-    ...
-
-    defaultConfig {
-
-        ...
-
-        resValue "string", "debug_api_key", getApiKey("debug-api-key.properties", "api.key", "DEBUG_API_KEY")
-        resValue "string", "release_api_key", getApiKey("release-api-key.properties", "api.key", "RELEASE_API_KEY")
-
-        ...
-
-    }
-
-    ...
-
-}
-
-...
-```
+[comment]: <> (```groovy)
+[comment]: <> (...)
+[comment]: <> (def getApiKey&#40;String fileName, String apiKeyProperty, String apiKeyEnvVar&#41; {)
+[comment]: <> (    Properties apiKeyProperties = new Properties&#40;&#41;)
+[comment]: <> (    def file = project.rootProject.file&#40;fileName&#41;)
+[comment]: <> (    if &#40;file.exists&#40;&#41;&#41; {)
+[comment]: <> (        apiKeyProperties.load&#40;file.newDataInputStream&#40;&#41;&#41;)
+[comment]: <> (        return apiKeyProperties.getProperty&#40;apiKeyProperty&#41; ?: "Please define $apiKeyProperty in $fileName")
+[comment]: <> (    } else {)
+[comment]: <> (        return System.getenv&#40;apiKeyEnvVar&#41; ?: "Please define $apiKeyEnvVar environment variable")
+[comment]: <> (    })
+[comment]: <> (})
+[comment]: <> (android {)
+[comment]: <> (    ...)
+[comment]: <> (    defaultConfig {)
+[comment]: <> (        ...)
+[comment]: <> (        resValue "string", "debug_api_key", getApiKey&#40;"debug-api-key.properties", "api.key", "DEBUG_API_KEY"&#41;)
+[comment]: <> (        resValue "string", "release_api_key", getApiKey&#40;"release-api-key.properties", "api.key", "RELEASE_API_KEY"&#41;)
+[comment]: <> (        ...)
+[comment]: <> (    })
+[comment]: <> (    ...)
+[comment]: <> (})
+[comment]: <> (...)
+[comment]: <> (```)
 
 A method is defined named **getApiKey** which takes three **arguments**
 the **fileName** to look for, the **apiKeyProperty** to lookup in the **fileName**
@@ -209,35 +203,44 @@ have two such files, named **debug-api-key.properties** and **release-api-key.pr
 in the root directory of our project.
 
 The main property of these files is the below one:
-```properties
-api.key=<api.key.value>
-```
+
+<script src="https://gist.github.com/steve-papadogiannis/91b4af16f86e04d3870983c3b4a16332.js"></script>
+
+[comment]: <> (```properties)
+[comment]: <> (api.key=<api.key.value>)
+[comment]: <> (```)
 
 Keep in mind that these file have to be pattern or exactly matched with at least
 one rule in the `.gitignore` file of the project.
 
 For example:
 
-```gitignore
-debug-api-key.properties
-release-api-key.properties
-```
+<script src="https://gist.github.com/steve-papadogiannis/8b3285a2f15176e484a11c9190960daa.js"></script>
+
+[comment]: <> (```gitignore)
+[comment]: <> (debug-api-key.properties)
+[comment]: <> (release-api-key.properties)
+[comment]: <> (```)
 
 ## Gradle Environment Variables
 
 If we chose to use the **Gradle** environment variables then we can set the 
 **DEBUG_API_KEY** environment variable like below:
 
-```shell
-DEBUG_API_KEY=<api.key.value>
-export DEBUG_API_KEY
-```
+<script src="https://gist.github.com/steve-papadogiannis/70b4156460369321d2088bc0bf6c3d88.js"></script>
+
+[comment]: <> (```shell)
+[comment]: <> (DEBUG_API_KEY=<api.key.value>)
+[comment]: <> (export DEBUG_API_KEY)
+[comment]: <> (```)
 
 With that give, when the build command is issued:
 
-```shell
-./gradlew build connectedCheck
-```
+<script src="https://gist.github.com/steve-papadogiannis/6bcb858080f3dfec3b35e302db860840.js"></script>
+
+[comment]: <> (```shell)
+[comment]: <> (./gradlew build connectedCheck)
+[comment]: <> (```)
 
 then the property\'s value will be
 resolved to the environment variable\'s value
