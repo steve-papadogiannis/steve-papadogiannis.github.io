@@ -8,6 +8,8 @@ When you have a project that is stored on a public repo, you have to have a proc
 not accidentally commit and push the secrets of your application (**private keys**, **API keys**, etc)
 and have them visible to the public eye, unless you want to be exploited for good.
 
+---
+
 ## Setup
 
 One solution would be to pass such information to the application at compile/build time, 
@@ -18,6 +20,8 @@ authenticating/authorizing access to a **Google Service**, such as **Directions 
 I have such a project at [dist-sys-server-java](https://github.com/steve-papadogiannis/dist-sys-server-java)
 which gave me the idea of the topic of this post.
 
+---
+
 ## Secrets
 
 So our application uses two properties, `api.key` and `test.api.key` to hold the values of 
@@ -27,6 +31,8 @@ Let see how the values can be injected to the application at compile time in ord
 not be present in the source code.
 
 The steps are shown from a top to bottom perspective.
+
+---
 
 ## Calling code
 
@@ -79,6 +85,8 @@ A same snippet would fetch our `test.api.key` for our test suites:
 [comment]: <> (    })
 [comment]: <> (```)
 
+---
+
 ## Properties files
 
 The `.properties` files are a good way to organize configurable aspects of your application
@@ -129,6 +137,8 @@ For the project at hand, in `application.properties` we have:
 
 What that means is that the `api.key` would take the value of another property (also named `api.key`)
 when resolved (thus put in `${...}`). The same also holds for the `application-test.properties`.
+
+---
 
 ## Pom project properties
 
@@ -192,6 +202,8 @@ These final properties are the ones injected as `Java` system properties when we
 [comment]: <> (```)
 
 The `<api.key.value>` and `<test.api.key.value>` should be replaced with the real one in this step.
+
+---
 
 ## Conclusion
 

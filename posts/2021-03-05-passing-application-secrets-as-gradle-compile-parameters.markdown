@@ -13,6 +13,8 @@ The key concept, again, is to avoid making your application secrets
 (**private keys**, **API keys**, etc.) visible on a public repo, and hence,
 not exploitable by others.
 
+---
+
 ## Setup
 
 The solution proposed here is to pass such information to the application 
@@ -22,6 +24,8 @@ To illustrate this, let\'s say we have a **Gradle** **Android** project
 which uses an **API Key** for authenticating/authorizing access 
 to a **Google Service**, such as **Maps API**.
 I have such a project at [dist-sys-client-android](https://github.com/steve-papadogiannis/dist-sys-client-android).
+
+---
 
 ## Secrets
 
@@ -40,6 +44,8 @@ Let see how the values can be injected to the application at compile time in ord
 not be present in the source code.
 
 The steps are shown from a top to bottom perspective.
+
+---
 
 ## Calling code
 
@@ -76,6 +82,8 @@ by the maps library, is done **declaratively** inside the applcation\'s
 
 As we see the `com.google.android.geo.API_KEY` takes an **android:value** of type 
 **string** that should be present in the **resources** of the application
+
+---
 
 ## Artifact specific resources
 
@@ -132,6 +140,8 @@ and:
 respectively. So the **@string/google_maps_key** would take the value of 
 either the **@string/debug_api_key**, or the **@string/release_api_key**,
 depending on the **artifact**.
+
+---
 
 ## Gradle Properties
 
@@ -196,6 +206,8 @@ value of the property **api.key** from a file with filename **debug-api-key.prop
 and if it fails to find the file, it tries to extract the value of 
 the **Environment Variable** named **DEBUG_API_KEY**.
 
+---
+
 ## Local Application `.properties` Files
 
 If we chose to use the local application `.properties` files then we should 
@@ -222,6 +234,8 @@ For example:
 [comment]: <> (release-api-key.properties)
 [comment]: <> (```)
 
+---
+
 ## Gradle Environment Variables
 
 If we chose to use the **Gradle** environment variables then we can set the 
@@ -244,6 +258,8 @@ With that give, when the build command is issued:
 
 then the property\'s value will be
 resolved to the environment variable\'s value
+
+---
 
 ## Conclusion
 
