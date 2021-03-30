@@ -26,13 +26,13 @@ We will use a table with at least the below specified columns, named **GAMES**:
 
 <div class="format-inner-table">
 
-| Column Name | Data Type | Scope |
-|-------|--------|---------|
-| ID | NUMBER | The unique identifier of a game and the primary key of the table |
-| PLAYER_ID | NUMBER | The unique identifier of a player |
-| OPPONENT_ID | NUMBER | The unique identifier of a player |
-| IS_PLAYER_WINNER | NUMBER(1, 0) | A flag indicating whether the player won | 
-| LOG_DATE | TIMESTAMP(6) | A timestamp for the game |
+| Column Name      | Data Type    | Scope                                                            |
+|------------------|--------------|------------------------------------------------------------------|
+| ID               | NUMBER       | The unique identifier of a game and the primary key of the table |
+| PLAYER_ID        | NUMBER       | The unique identifier of a player                                |
+| OPPONENT_ID      | NUMBER       | The unique identifier of a player                                |
+| IS_PLAYER_WINNER | NUMBER(1, 0) | A flag indicating whether the player won                         | 
+| LOG_DATE         | TIMESTAMP(6) | A timestamp for the game                                         |
 
 </div>
 
