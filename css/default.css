@@ -88,7 +88,10 @@ code {
 }
 
 /*
- *  Scrollbar style
+ * Scrollbar style
+ * Ref https://css-tricks.com/the-current-state-of-styling-scrollbars/
+ *
+ * Start
  */
 .sourceCode::-webkit-scrollbar {
     height: 10px;
@@ -153,6 +156,14 @@ pre::-webkit-scrollbar-thumb {
     background-color: #999;
 }
 
+/* End */
+
+/* Table css
+ * Ref: https://dev.to/dcodeyt/creating-beautiful-html-tables-with-css-428l
+ *
+ * Start
+ */
+
 .format-inner-table table {
     border-collapse: collapse;
     margin: 25px 0;
@@ -189,3 +200,5 @@ pre::-webkit-scrollbar-thumb {
     font-weight: bold;
     color: #009879;
 }
+
+/* End */
