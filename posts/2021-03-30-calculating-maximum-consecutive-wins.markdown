@@ -59,7 +59,7 @@ Below is the table creation script:
 
 ---
 
-## Union ('em all) 🪓
+## Union (\'em all) 🪓
 
 With the basic domain and assumptions defined we can proceed to defining the result set that
 we will aggregate upon.
@@ -69,3 +69,11 @@ So, we have **three** game cases that will be matched to **three** basic **Selec
 * Get all **PVP** games that are started by a specific player:
 
 <script src="https://gist.github.com/steve-papadogiannis/e416f62a1e4e4c562957af9a2704ed19.js"></script>
+
+* Get all **non-PVP** games that are started by a specific player:
+
+<script src="https://gist.github.com/steve-papadogiannis/c1ad8de2e6f1593e78d9107e8c67bc64.js"></script>
+
+* Get all **joined** games that a specific user has participated:
+
+<script src="https://gist.github.com/steve-papadogiannis/ad4b41f2b1987bda9f8dfabccc29c84f.js"></script>
