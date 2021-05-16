@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>My Personal Blog - Calculate Maximum Consecutive Wins in SQL</title>
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">My Personal Blog</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Calculate Maximum Consecutive Wins in SQL</h1>
+
+            <div class="info">
+    Posted on May 16, 2021
+    
+</div>
+
+<h2 id="intro">Intro</h2>
+<p>In this post I will elaborate on the concept of calculating the maximum consecutive wins on a <strong>game-like</strong> project via <strong>SQL</strong>.</p>
+<p>Let's put things in context. Assume you have a project that has a gamified aspect in its domain where you have users who win some kind of game. In this context, you may want to award players based on their performance and especially for the maximum consecutive wins. So, you need a way to have a calculation deriving from your data for this accumulation. Another assumption is that the game data are stored in some kind of database that supports <strong>SQL</strong>.</p>
+<hr />
+<h2 id="setup">Setup</h2>
+<p>The practical example will be in <strong>PL/SQL</strong> of <strong>Oracle DB</strong></p>
+<p>We will use a table with at least the below specified columns, named <strong>GAMES</strong>:</p>
+<div class="format-inner-table">
+<table>
+<thead>
+<tr class="header">
+<th>Column Name</th>
+<th>Data Type</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ID</td>
+<td>NUMBER</td>
+<td>The unique identifier of a game and the primary key of the table</td>
+</tr>
+<tr class="even">
+<td>PLAYER_ID</td>
+<td>NUMBER</td>
+<td>The unique identifier of a player</td>
+</tr>
+<tr class="odd">
+<td>OPPONENT_ID</td>
+<td>NUMBER</td>
+<td>The unique identifier of a player</td>
+</tr>
+<tr class="even">
+<td>IS_PLAYER_WINNER</td>
+<td>NUMBER(1, 0)</td>
+<td>A flag indicating whether the player won</td>
+</tr>
+<tr class="odd">
+<td>LOG_DATE</td>
+<td>TIMESTAMP(6)</td>
+<td>A timestamp for the game</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <strong>PLAYER_ID</strong> and the <strong>OPPONENT_ID</strong> match to a <strong>USER_ID</strong> of the domain, which means that they can be foreign keys to another table <strong>USERS</strong> representing the users of the domain (<em>for the purpose of this post, the actual correlation is out of scope</em>).</p>
+<p>In addition, if the game is also playable in a <strong>non-PVP</strong> mode then the <strong>OPPONENT_ID</strong> can have the same <strong>USER_ID</strong> as the <strong>PLAYER_ID</strong>.</p>
+<p>Another practical assumption that holds is that the <strong>PLAYER_ID</strong> is the initiator of the game and a real user, so we can have <strong>three</strong> game cases:</p>
+<ul>
+<li>A player (<strong>USER_ID</strong>) starts a game (<strong>USER_ID = PLAYER_ID</strong>) versus another player (<strong>PLAYER_ID != OPPONENT_ID</strong>)</li>
+<li>A player (<strong>USER_ID</strong>) starts a game (<strong>USER_ID = PLAYER_ID</strong>) versus the program (<em>non-PVP, with Bot</em>) (<strong>PLAYER_ID = OPPONENT_ID</strong>)</li>
+<li>A player (<strong>USER_ID</strong>) joins (<strong>USER_ID = OPPONENT_ID</strong>) another's player game (<strong>OPPONENT_ID != PLAYER_ID</strong>)</li>
+</ul>
+<p>Below is the table creation script:</p>
+<script src="https://gist.github.com/steve-papadogiannis/3e3fcb0d34bfbb6e826b2df31cc1d934.js"></script>
+<hr />
+<h2 id="union-em-all-Ÿ“">Union ('em all) ðŸª“</h2>
+<p>With the basic domain and assumptions defined we can proceed to defining the data set that we will aggregate upon.</p>
+<p>So, we have <strong>three</strong> game cases that will be matched to <strong>three</strong> basic <strong>Select</strong>s:</p>
+<ul>
+<li>Get all <strong>PVP</strong> games that are started by a specific player:</li>
+</ul>
+<script src="https://gist.github.com/steve-papadogiannis/e416f62a1e4e4c562957af9a2704ed19.js"></script>
+<ul>
+<li>Get all <strong>non-PVP</strong> games that are started by a specific player:</li>
+</ul>
+<script src="https://gist.github.com/steve-papadogiannis/c1ad8de2e6f1593e78d9107e8c67bc64.js"></script>
+<ul>
+<li>Get all <strong>joined</strong> games that a specific user has participated:</li>
+</ul>
+<script src="https://gist.github.com/steve-papadogiannis/ad4b41f2b1987bda9f8dfabccc29c84f.js"></script>
+<hr />
+<h2 id="key-concept">Key Concept</h2>
+<p>Ok, so now, we have to come up with a basic calculation that will lead us to the solution of the problem. From a top-down perspective we can see that we want to end up with the maximum of a number of consecutive wins.</p>
+<p>What, however, identifies as a consecutive win?</p>
+<p>That, will be a difference between an end point, and a start point, in our data, of marked wins where no loses are intervened.</p>
+<p>Furthermore, with the basic calculation at hand, now, we are missing an intermediate step in order to reify the key concept and that will be the demarcation of the aforementioned points in our data set.</p>
+<hr />
+<h2 id="demarcation-of-wins">Demarcation of Wins</h2>
+<p>As a start point in a row of wins in our data set we can mark a row that represents a game the player won, and the previous row of that row represents a game the player lost.</p>
+<p>In order to define the "previous row" concept we have to have a column of the rows that we will traverse upon and order it by another specific column. That, would be a <strong>PARTITION</strong> of the data set by the <strong>PLAYER_ID</strong> which should be ordered by (<em>ascending</em>) the <strong>LOG_DATE</strong> of each row.</p>
+<p>The <strong>SELECT</strong> statement should be like this:</p>
+<script src="https://gist.github.com/steve-papadogiannis/e908684f01768947eab25a3f20eae61d.js"></script>
+<p>Let's elaborate on this a little bit more. If the player has won this game (<strong>IS_PLAYER_WINNER = 1</strong>) and the previous game (<strong>LAG(...)</strong>) of the partition is a loss (<strong>NVL(LAG(IS_PLAYER_WINNER) OVER (PARTITION BY PLAYER_ID ORDER BY LOG_DATE), 0) = 0</strong>) (<em>Let's take a pause here to clarify the use of <strong>NVL</strong>. The first row of the data set does not have a previous row so in order to not break the calculation we assume that this absence of previous row is equivalent to a loss</em>) then we return its <strong>ROW_NUMBER</strong> in order to mark this row as the start of a (maybe) sequence of wins.</p>
+<p>The same thought process applies for the definition of the end point.</p>
+<p>As an end point in a row of wins in our data set we can mark a row that represents a game the player won, and the next row of that row represents a game the player lost.</p>
+<p>To define the "next row" concept, our new deus ex machina is the <strong>LEAD</strong> function.</p>
+<p>The <strong>SELECT</strong> statement should be like this:</p>
+<script src="https://gist.github.com/steve-papadogiannis/16ec415bad4871d923db2314042e4c85.js"></script>
+<p>(<em>A similar explanation is due for the use of <strong>NVL</strong> here. The last row of the data set does not have a next row so in order to not break the calculation we assume that this absence of next row is equivalent to a loss</em>)</p>
+<p>Let's wrap up the section with the whole query thus far:</p>
+<script src="https://gist.github.com/steve-papadogiannis/fb83a698ec85b95189843c611e174415.js"></script>
+<hr />
+<h2 id="consecutive-wins">Consecutive Wins</h2>
+<p>The intermediate step is well-defined, so, the calculation of consecutive wins is as simple as this:</p>
+<script src="https://gist.github.com/steve-papadogiannis/6f9bb5da037dcce0e02d4a07e6ceb2c1.js"></script>
+<p>Here we cast out the unnecessary rows, meaning, either the ones that are the intermediate wins in a sequence of wins (<strong>WINS_START IS NULL AND WINS_END IS NULL</strong>, they are neither a starting point, nor an end point for the calculation), or the ones that are single wins (<strong>WINS_START IS NOT NULL AND WINS_END IS NOT NULL</strong>) which cannot identify as consecutive wins.</p>
+<p>With the remaining data we calculate the differences between the <strong>ROW_NUMBER</strong> of any next row with the <strong>ROW_NUMBER</strong> of the current row (plus one).</p>
+<p>The final result in this step is a collection of consecutive wins for the specific player of our game.</p>
+<hr />
+<h2 id="get-the-maximum">Get the Maximum</h2>
+<p>Now we can get the <strong>MAX</strong> of the consecutive wins and also have a fail safe clause when we may not have any data for a user (<strong>SELECT 0 AS MAX_CONSECUTIVE_WINS FROM DUAL</strong>):</p>
+<script src="https://gist.github.com/steve-papadogiannis/3a34b592b12f1b288a485394e39fcdd9.js"></script>
+<hr />
+<h2 id="outro">Outro</h2>
+<p>Let's now revisit the steps of the calculation to sum up the solution given:</p>
+<ul>
+<li>We define the data set of the calculation (<em>the info that is useful</em>)</li>
+<li>We mark the eligible data with their row number</li>
+<li>We calculate the differences of the eligible rows</li>
+<li>We get the maximum difference or zero if no data at all</li>
+</ul>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>
