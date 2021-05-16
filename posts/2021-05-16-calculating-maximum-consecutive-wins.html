@@ -35,44 +35,6 @@
 <h2 id="setup">Setup</h2>
 <p>The practical example will be in <strong>PL/SQL</strong> of <strong>Oracle DB</strong></p>
 <p>We will use a table with at least the below specified columns, named <strong>GAMES</strong>:</p>
-<div class="format-inner-table">
-<table>
-<thead>
-<tr class="header">
-<th>Column Name</th>
-<th>Data Type</th>
-<th>Scope</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>ID</td>
-<td>NUMBER</td>
-<td>The unique identifier of a game and the primary key of the table</td>
-</tr>
-<tr class="even">
-<td>PLAYER_ID</td>
-<td>NUMBER</td>
-<td>The unique identifier of a player</td>
-</tr>
-<tr class="odd">
-<td>OPPONENT_ID</td>
-<td>NUMBER</td>
-<td>The unique identifier of a player</td>
-</tr>
-<tr class="even">
-<td>IS_PLAYER_WINNER</td>
-<td>NUMBER(1, 0)</td>
-<td>A flag indicating whether the player won</td>
-</tr>
-<tr class="odd">
-<td>LOG_DATE</td>
-<td>TIMESTAMP(6)</td>
-<td>A timestamp for the game</td>
-</tr>
-</tbody>
-</table>
-</div>
 <p>The <strong>PLAYER_ID</strong> and the <strong>OPPONENT_ID</strong> match to a <strong>USER_ID</strong> of the domain, which means that they can be foreign keys to another table <strong>USERS</strong> representing the users of the domain (<em>for the purpose of this post, the actual correlation is out of scope</em>).</p>
 <p>In addition, if the game is also playable in a <strong>non-PVP</strong> mode then the <strong>OPPONENT_ID</strong> can have the same <strong>USER_ID</strong> as the <strong>PLAYER_ID</strong>.</p>
 <p>Another practical assumption that holds is that the <strong>PLAYER_ID</strong> is the initiator of the game and a real user, so we can have <strong>three</strong> game cases:</p>
