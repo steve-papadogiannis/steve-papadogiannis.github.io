@@ -24,23 +24,17 @@ The practical example will be in **PL/SQL** of **Oracle DB**
 We will use a table with at least the below specified columns, named **GAMES**:
 
 
-[comment]: <> (<div class="format-inner-table">)
+<div class="format-inner-table">
 
-[comment]: <> (| Column Name      | Data Type    | Scope                                                            |)
+| Column Name      | Data Type    | Scope                                                            |
+|------------------|--------------|------------------------------------------------------------------|
+| ID               | NUMBER       | The unique identifier of a game and the primary key of the table |
+| PLAYER_ID        | NUMBER       | The unique identifier of a player                                |
+| OPPONENT_ID      | NUMBER       | The unique identifier of a player                                |
+| IS_PLAYER_WINNER | NUMBER(1, 0) | A flag indicating whether the player won                         | 
+| LOG_DATE         | TIMESTAMP(6) | A timestamp for the game                                         |
 
-[comment]: <> (|------------------|--------------|------------------------------------------------------------------|)
-
-[comment]: <> (| ID               | NUMBER       | The unique identifier of a game and the primary key of the table |)
-
-[comment]: <> (| PLAYER_ID        | NUMBER       | The unique identifier of a player                                |)
-
-[comment]: <> (| OPPONENT_ID      | NUMBER       | The unique identifier of a player                                |)
-
-[comment]: <> (| IS_PLAYER_WINNER | NUMBER&#40;1, 0&#41; | A flag indicating whether the player won                         | )
-
-[comment]: <> (| LOG_DATE         | TIMESTAMP&#40;6&#41; | A timestamp for the game                                         |)
-
-[comment]: <> (</div>)
+</div>
 
 The **PLAYER_ID** and the **OPPONENT_ID** match to a **USER_ID** of the domain, which means
 that they can be foreign keys to another table **USERS** representing the users of the domain
