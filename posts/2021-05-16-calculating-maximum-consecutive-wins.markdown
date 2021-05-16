@@ -59,7 +59,7 @@ Below is the table creation script:
 
 ---
 
-## Union (\'em all)
+## Union (\'em all) 🪓
 
 With the basic domain and assumptions defined we can proceed to defining the data set that
 we will aggregate upon.
