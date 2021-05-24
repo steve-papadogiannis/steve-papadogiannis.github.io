@@ -164,6 +164,11 @@ With the remaining data
 we calculate the differences between the **ROW_NUMBER** of any next row
 with the **ROW_NUMBER** of the current row (plus one).
 
+Note here, that, for the rows that do not have **WINS_START** demarcation (**WINS_START IS NULL**),
+and their next ones do not have **WINS_END** demarcation (**WINS_END IS NULL**), we will have 
+**SELECT NULL - NULL + 1** which results to **NULL**, and the **MAX** function that we will use next 
+does not take them into consideration.
+
 The final result in this step is a collection of consecutive wins for 
 the specific player of our game.
 
