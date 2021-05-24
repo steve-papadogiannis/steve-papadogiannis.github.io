@@ -126,6 +126,7 @@
 <script src="https://gist.github.com/steve-papadogiannis/6f9bb5da037dcce0e02d4a07e6ceb2c1.js"></script>
 <p>Here we cast out the unnecessary rows, meaning, either the ones that are the intermediate wins in a sequence of wins (<strong>WINS_START IS NULL AND WINS_END IS NULL</strong>, they are neither a starting point, nor an end point for the calculation), or the ones that are single wins (<strong>WINS_START IS NOT NULL AND WINS_END IS NOT NULL</strong>) which cannot identify as consecutive wins.</p>
 <p>With the remaining data we calculate the differences between the <strong>ROW_NUMBER</strong> of any next row with the <strong>ROW_NUMBER</strong> of the current row (plus one).</p>
+<p>Note here, that, for the rows that do not have <strong>WINS_START</strong> demarcation (<strong>WINS_START IS NULL</strong>), and their next ones do not have <strong>WINS_END</strong> demarcation (<strong>WINS_END IS NULL</strong>), we will have <strong>SELECT NULL - NULL + 1</strong> which results to <strong>NULL</strong>, and the <strong>MAX</strong> function that we will use next does not take them into consideration.</p>
 <p>The final result in this step is a collection of consecutive wins for the specific player of our game.</p>
 <hr />
 <h2 id="get-the-maximum">Get the Maximum</h2>
