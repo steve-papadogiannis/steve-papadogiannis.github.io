@@ -60,26 +60,22 @@ should be something similar to `<path_to_oracle_docker_images_cloned_repo>
 ./buildDockerImage.sh -v 12.2.0.1 -e
 ```
 
-This command will generate an **oracle/database:12.2.0.1-ee** image in the **Local Docker Image Registry**, and then, we 
-could build containers based on that image.
+This command will generate an **oracle/database:12.2.0.1-ee** image in the **Local Docker Image Registry**.
 
 ---
 
 ## Docker Container Creation
 
-In this step, we would like to setup a container which would have a running instance of the
-**Oracle Database Version** we specified above and would persist the data across restarts.
-
 On first startup of the container a new database will be created, and at that time
-we can run the initialization scripts in order to have an application database ready.
+we can run the initialization scripts in order to have an application schema created.
 
 For the scripts to be run at post-setup phase they should be included in 
 `/opt/oracle/scripts/setup` directory inside the container
 
 ### Dockerfile
 
-To extend the setup with the initialization of the application database we could create
-a **Dockerfile** to add that step of copying the necessary files in the **post-setup** directory.
+To accomplish above part, we should create
+a **Dockerfile** to include the copying of the scripts in the **post-setup** directory.
 
 <script src="https://gist.github.com/steve-papadogiannis/98180985eb1086920769062dbaaa4ff5.js"></script>
 
@@ -88,8 +84,10 @@ with a number to preserve the order we want them to run.
 
 ### Docker Compose Configuration File
 
-In order to avoid specifying a long, easy-to-forget command to bring up the container,
-we can define a **Docker Compose** `.yaml` file to declare the container\'s properties:
+Now, in order to avoid specifying a long, easy-to-forget command to bring up the container,
+we can define a **Docker Compose** `.yaml` file to declare the container\'s properties.
+
+Below is an example of that configuration:
 
 <script src="https://gist.github.com/steve-papadogiannis/1c8df5960cc86508e6f0b2377e3b347c.js"></script>
 
@@ -121,10 +119,15 @@ DATABASE IS READY TO USE!
 
 ## Initialization scripts
 
-If the application database is already accessible, or we have access to a reference schema,
-**Oracle Database** gives a nice util tool where a privileged user can export the schema,
-with or without the data, to a set of ordered scripts. That helps to recreate the schema
-from these scripts when run in the correct order:
+Ok\..., but how are the intialization scripts created?
+
+If another instance of the application database we want to replicate is already 
+up and running and accessible, or we have access to a reference schema of that application,
+**Oracle Database** gives us a nice utility tool where a privileged user can export the schema,
+with or without the data, to a set of ordered scripts. 
+
+The order is that of the reverse dependency
+between the items _(e.g\. first we create the tables, then we add data to them)_:
 
 ![Fig. 1: Exported scripts](../images/exported_scripts.png)
 
@@ -135,10 +138,15 @@ instruct some database management commands.
 
 <script src="https://gist.github.com/steve-papadogiannis/002b54bbf82d2e413db488285a4ed014.js"></script>
 
-Due to the fact that **12c** version of **Oracle Database** introduced a different architecture
-on the **Database**, now you can have a **CDB** (container database) that contains several
-**PDB**s (pluggable databases), so in order to have our application schema to a specific **PDB**
-(PDB1) we append this statement in the start of every script: **ALTER
+Due to the fact that **12c** version of **Oracle Database** introduced the ability
+to have a different architecture on the **Database**, meaning, now you can have a 
+**CDB** (container database) that contains several **PDB**s (pluggable databases),
+one can separate his/her application schema to a specific **PDB**
+(e.g\. PDB1) _(**ORCLCDB** and **ORCLPDB1** are given by default by the main setup)_.
+
+We follow that concept by appending below statement in the start of every script in order 
+for the script to be run on the desired database: 
+**ALTER
 SESSION
 SET CONTAINER = ORCLPDB1;**
 
@@ -150,9 +158,9 @@ application at hand.
 ## Summary
 
 The aforementioned steps should result to a running **Oracle Database Instance** that holds
-the **Application Schema**.
+a specific **Application Schema** defined through the initialization scripts provided.
 
-It should be accessible with the below connection info:
+The **Instance** should be accessible with the below connection info:
 
 <div class="format-inner-table">
 
