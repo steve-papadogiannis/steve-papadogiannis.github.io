@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>My Personal Blog - Containerizing Oracle Database</title>
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">My Personal Blog</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../archive.html">Archive</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Containerizing Oracle Database</h1>
+
+            <div class="info">
+    Posted on May 30, 2021
+    
+</div>
+
+<h2 id="intro">Intro</h2>
+<p>In this post, we will walk-through on how to make a <strong>Docker</strong> container of an <strong>Oracle Database</strong>.</p>
+<p>The end result will be a running <strong>Oracle DB Instance</strong> that has an application schema set up and can persist our application data through restarts using a <strong>Volume</strong></p>
+<p>The steps are based on the instructions for containerizing a <strong>Single Instance</strong> of the <strong>Oracle DB</strong> presented at: <a href="https://github.com/oracle/docker-images/blob/main/OracleDatabase/SingleInstance/README.md">README.md</a></p>
+<hr />
+<h2 id="versions">Versions</h2>
+<ul>
+<li>Docker Engine: 20.10.6</li>
+<li>Docker Compose: 1.29.1</li>
+<li>Oracle Database: 12c Release 2 (12.2.0.1) Enterprise Edition</li>
+</ul>
+<hr />
+<h2 id="oracle-dockerfiles">Oracle dockerfiles</h2>
+<p>First things first, we have to clone <strong>Oracle's</strong> repository that contains useful files for the generation of the <strong>Docker Image</strong> of the <strong>Oracle Database</strong>. The repository can be found at: <a href="https://github.com/oracle/docker-images">https://github.com/oracle/docker-images</a></p>
+<p>We are interested in the <strong>Single Instance</strong> case, so the files that we focus on is in the path <code>OracleDatabase/SingleInstance</code></p>
+<hr />
+<h2 id="oracle-database-binaries">Oracle Database Binaries</h2>
+<p>In order to create the <strong>Docker Image</strong> we have to have the <strong>Oracle Database Binaries</strong> for the version we want to build.</p>
+<p>These can be downloaded by <strong>Oracle Technology Network</strong>.</p>
+<p>Once downloaded, the <strong>zipped</strong> archive <strong>linuxx64_12201_database.zip</strong> should be placed inside:</p>
+<pre class="shell"><code>&lt;path_to_oracle_docker_images_cloned_repo&gt;/OracleDatabase/SingleInstance/dockerfiles/12.2.0.1/</code></pre>
+<hr />
+<h2 id="docker-image-creation">Docker Image Creation</h2>
+<p>After the above step, with the <strong>Docker daemon</strong> running, we can build the <strong>Docker Image</strong> of the database issuing a command similar to the below one <em>(Note that the current working directory should be something similar to <code>&lt;path_to_oracle_docker_images_cloned_repo&gt; /OracleDatabase/SingleInstance/dockerfiles</code>)</em>:</p>
+<pre class="shell"><code>./buildDockerImage.sh -v 12.2.0.1 -e</code></pre>
+<p>This command will generate an <strong>oracle/database:12.2.0.1-ee</strong> image in the <strong>Local Docker Image Registry</strong>.</p>
+<hr />
+<h2 id="docker-container-creation">Docker Container Creation</h2>
+<p>On first startup of the container a new database will be created, and at that time we can run the initialization scripts in order to have an application schema created.</p>
+<p>For the scripts to be run at post-setup phase they should be included in <code>/opt/oracle/scripts/setup</code> directory inside the container</p>
+<h3 id="dockerfile">Dockerfile</h3>
+<p>To accomplish above part, we should create a <strong>Dockerfile</strong> to include the copying of the scripts in the <strong>post-setup</strong> directory.</p>
+<script src="https://gist.github.com/steve-papadogiannis/98180985eb1086920769062dbaaa4ff5.js"></script>
+<p>Inside the local directory <code>scripts</code>, we have to have the initialization scripts, prefixed with a number to preserve the order we want them to run.</p>
+<h3 id="docker-compose-configuration-file">Docker Compose Configuration File</h3>
+<p>Now, in order to avoid specifying a long, easy-to-forget command to bring up the container, we can define a <strong>Docker Compose</strong> <code>.yaml</code> file to declare the container's properties.</p>
+<p>Below is an example of that configuration:</p>
+<script src="https://gist.github.com/steve-papadogiannis/1c8df5960cc86508e6f0b2377e3b347c.js"></script>
+<p>When the <code>docker-compose</code> is invoked to bring up the container it will search in the same folder for the <strong>Dockerfile</strong> we specified above, create the container's <strong>volume</strong>, named <strong>oracle-database</strong>, expose all necessary ports and set an environment variable with the desired <strong>Oracle Password</strong>.</p>
+<p>The volume will be bound with <strong>/opt/oracle/oradata</strong> directory in order to preserve the database data across restarts.</p>
+<p>The <strong>8080</strong> port is optional as it is used for a configuration interface (<strong>Oracle Application Express</strong>) that is out of scope for the post.</p>
+<p>The specified <strong>password</strong> will be used for the <strong>system</strong> users (<strong>SYS</strong>, <strong>SYSTEM</strong> and <strong>PDB_ADMIN</strong>)</p>
+<p>If the setup is successful the below message should be printed somewhere in the container's logs:</p>
+<pre class="shell"><code>#########################
+DATABASE IS READY TO USE!
+#########################</code></pre>
+<hr />
+<h2 id="initialization-scripts">Initialization scripts</h2>
+<p>Ok..., but how are the intialization scripts created?</p>
+<p>If another instance of the application database we want to replicate is already up and running and accessible, or we have access to a reference schema of that application, <strong>Oracle Database</strong> gives us a nice utility tool where a privileged user can export the schema, with or without the data, to a set of ordered scripts.</p>
+<p>The order is that of the reverse dependency between the items <em>(e.g. first we create the tables, then we add data to them)</em>:</p>
+<figure>
+<img src="../images/exported_scripts.png" alt /><figcaption>Fig. 1: Exported scripts</figcaption>
+</figure>
+<p>The scripts from 2 to 10 are the exported ones.</p>
+<p>The first script is one that we define in order to instruct some database management commands.</p>
+<script src="https://gist.github.com/steve-papadogiannis/002b54bbf82d2e413db488285a4ed014.js"></script>
+<p>Due to the fact that <strong>12c</strong> version of <strong>Oracle Database</strong> introduced the ability to have a different architecture on the <strong>Database</strong>, meaning, now you can have a <strong>CDB</strong> (container database) that contains several <strong>PDB</strong>s (pluggable databases), one can separate his/her application schema to a specific <strong>PDB</strong> (e.g. PDB1) <em>(<strong>ORCLCDB</strong> and <strong>ORCLPDB1</strong> are given by default by the main setup)</em>.</p>
+<p>We follow that concept by appending below statement in the start of every script in order for the script to be run on the desired database: <strong>ALTER SESSION SET CONTAINER = ORCLPDB1;</strong></p>
+<p>The setup demonstrated in the script is arbitrary and can vary based on the needs of the application at hand.</p>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>The aforementioned steps should result to a running <strong>Oracle Database Instance</strong> that holds a specific <strong>Application Schema</strong> defined through the initialization scripts provided.</p>
+<p>The <strong>Instance</strong> should be accessible with the below connection info:</p>
+<div class="format-inner-table">
+<table>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Host</td>
+<td>localhost</td>
+</tr>
+<tr class="even">
+<td>Service</td>
+<td>ORCLPDB1</td>
+</tr>
+<tr class="odd">
+<td>User</td>
+<td>DEV_REF_12_2_0_1</td>
+</tr>
+<tr class="even">
+<td>Password</td>
+<td>1234</td>
+</tr>
+<tr class="odd">
+<td>Port</td>
+<td>1521</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>
